@@ -1,0 +1,6 @@
+# Local overrides, applied automatically by `docker compose up`.
+# Docker's Postgres is published on 5433 so it does not clash with a Postgres installed on the host (5432).
+services:
+  postgres:
+    ports: !override
+      - 5433:5432
