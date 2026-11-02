@@ -10,6 +10,7 @@ import {
   IsNotEmpty,
   IsOptional,
   MinLength,
+  IsString,
 } from 'class-validator';
 import { FileDto } from '../../files/dto/file.dto';
 import { RoleDto } from '../../roles/dto/role.dto';
@@ -17,6 +18,18 @@ import { StatusDto } from '../../statuses/dto/status.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
 
 export class CreateUserDto {
+  lastLoginAt?: Date | null;
+
+  phoneVerifiedAt?: Date | null;
+
+  @ApiProperty({
+    required: false,
+    type: () => String,
+  })
+  @IsOptional()
+  @IsString()
+  phone?: string | null;
+
   @ApiProperty({ example: 'test1@example.com', type: String })
   @Transform(lowerCaseTransformer)
   @IsNotEmpty()

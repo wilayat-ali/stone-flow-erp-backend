@@ -9,5 +9,8 @@ export type AuthConfig = {
   forgotExpires?: ms.StringValue;
   confirmEmailSecret?: string;
   confirmEmailExpires?: ms.StringValue;
+  superAdminSecret?: string;
+  superAdminExpires?: ms.StringValue;
+  publicRegistration: boolean;
   uniformErrors: boolean;
 };

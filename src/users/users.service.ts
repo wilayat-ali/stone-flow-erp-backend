@@ -116,6 +116,12 @@ export class UsersService {
     return this.usersRepository.create({
       // Do not remove comment below.
       // <creating-property-payload />
+      lastLoginAt: createUserDto.lastLoginAt,
+
+      phoneVerifiedAt: createUserDto.phoneVerifiedAt,
+
+      phone: createUserDto.phone,
+
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
       email: email,
@@ -154,6 +160,10 @@ export class UsersService {
 
   findByEmail(email: User['email']): Promise<NullableType<User>> {
     return this.usersRepository.findByEmail(email);
+  }
+
+  findByPhone(phone: NonNullable<User['phone']>): Promise<NullableType<User>> {
+    return this.usersRepository.findByPhone(phone);
   }
 
   findBySocialIdAndProvider({
@@ -270,6 +280,12 @@ export class UsersService {
     return this.usersRepository.update(id, {
       // Do not remove comment below.
       // <updating-property-payload />
+      lastLoginAt: updateUserDto.lastLoginAt,
+
+      phoneVerifiedAt: updateUserDto.phoneVerifiedAt,
+
+      phone: updateUserDto.phone,
+
       firstName: updateUserDto.firstName,
       lastName: updateUserDto.lastName,
       email,

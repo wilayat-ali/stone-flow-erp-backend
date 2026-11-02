@@ -8,6 +8,7 @@ import {
   Column,
   UpdateDateColumn,
 } from 'typeorm';
+import { CompanyEntity } from '../../../../../companies/infrastructure/persistence/relational/entities/company.entity';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
@@ -24,6 +25,12 @@ export class SessionEntity extends EntityRelationalHelper {
   })
   @Index()
   user: UserEntity;
+
+  @ManyToOne(() => CompanyEntity, {
+    eager: true,
+    nullable: true,
+  })
+  activeCompany?: CompanyEntity | null;
 
   @Column()
   hash: string;

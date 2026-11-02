@@ -26,8 +26,41 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   },
 });
 
+import { CompaniesModule } from './companies/companies.module';
+import { WorkspacesModule } from './workspaces/workspaces.module';
+import { TenancyModule } from './tenancy/tenancy.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { InvitationsModule } from './invitations/invitations.module';
+import { CompanyAdminModule } from './company-admin/company-admin.module';
+import { SuperAdminModule } from './superadmin/superadmin.module';
+
+import { CompanyPlatformsModule } from './company-platforms/company-platforms.module';
+
+import { CompanyRolesModule } from './company-roles/company-roles.module';
+
+import { CompanyMembersModule } from './company-members/company-members.module';
+
+import { CompanyInvitationsModule } from './company-invitations/company-invitations.module';
+
+import { SuperAdminsModule } from './super-admins/super-admins.module';
+
+import { AuditLogsModule } from './audit-logs/audit-logs.module';
+
 @Module({
   imports: [
+    TenancyModule,
+    NotificationsModule,
+    InvitationsModule,
+    CompanyAdminModule,
+    SuperAdminModule,
+    WorkspacesModule,
+    AuditLogsModule,
+    SuperAdminsModule,
+    CompanyInvitationsModule,
+    CompanyMembersModule,
+    CompanyRolesModule,
+    CompanyPlatformsModule,
+    CompaniesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, authConfig, appConfig, mailConfig, fileConfig],

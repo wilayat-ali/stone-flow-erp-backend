@@ -11,6 +11,7 @@ const PLACEHOLDER_SECRETS = {
   AUTH_REFRESH_SECRET: 'secret_for_refresh',
   AUTH_FORGOT_SECRET: 'secret_for_forgot',
   AUTH_CONFIRM_EMAIL_SECRET: 'secret_for_confirm_email',
+  AUTH_SUPERADMIN_SECRET: 'secret_for_superadmin',
 } as const;
 
 function checkPlaceholderSecrets(): void {
@@ -56,6 +57,17 @@ class EnvironmentVariablesValidator {
   @IsString()
   AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN: string;
 
+  @IsString()
+  AUTH_SUPERADMIN_SECRET: string;
+
+  @IsString()
+  @IsOptional()
+  AUTH_SUPERADMIN_TOKEN_EXPIRES_IN: string;
+
+  @IsBooleanString()
+  @IsOptional()
+  AUTH_PUBLIC_REGISTRATION: string;
+
   @IsBooleanString()
   @IsOptional()
   AUTH_UNIFORM_ERRORS: string;
@@ -75,6 +87,10 @@ export default registerAs<AuthConfig>('auth', () => {
     confirmEmailSecret: process.env.AUTH_CONFIRM_EMAIL_SECRET,
     confirmEmailExpires: process.env
       .AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN as ms.StringValue,
+    superAdminSecret: process.env.AUTH_SUPERADMIN_SECRET,
+    superAdminExpires: (process.env.AUTH_SUPERADMIN_TOKEN_EXPIRES_IN ||
+      '1h') as ms.StringValue,
+    publicRegistration: process.env.AUTH_PUBLIC_REGISTRATION === 'true',
     uniformErrors: process.env.AUTH_UNIFORM_ERRORS === 'true',
   };
 });

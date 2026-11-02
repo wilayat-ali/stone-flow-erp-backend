@@ -9,17 +9,28 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { MailModule } from '../mail/mail.module';
 import { SessionModule } from '../session/session.module';
 import { UsersModule } from '../users/users.module';
+import { CompaniesModule } from '../companies/companies.module';
+import { CompanyMembersModule } from '../company-members/company-members.module';
+import { LoginThrottleService } from './login-throttle.service';
 
 @Module({
   imports: [
     UsersModule,
     SessionModule,
+    CompaniesModule,
+    CompanyMembersModule,
     PassportModule,
     MailModule,
     JwtModule.register({}),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtRefreshStrategy, AnonymousStrategy],
+  providers: [
+    AuthService,
+    LoginThrottleService,
+    JwtStrategy,
+    JwtRefreshStrategy,
+    AnonymousStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

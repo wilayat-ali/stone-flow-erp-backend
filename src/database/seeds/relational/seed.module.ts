@@ -10,8 +10,11 @@ import { UserSeedModule } from './user/user-seed.module';
 import databaseConfig from '../../config/database.config';
 import appConfig from '../../../config/app.config';
 
+import { SuperAdminSeedModule } from './super-admin/super-admin-seed.module';
+
 @Module({
   imports: [
+    SuperAdminSeedModule,
     RoleSeedModule,
     StatusSeedModule,
     UserSeedModule,

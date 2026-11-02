@@ -10,10 +10,15 @@ import {
   Patch,
   Delete,
   SerializeOptions,
+  Ip,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
+import { AuthWorkspaceLoginDto } from './dto/auth-workspace-login.dto';
+import { MyCompanyDto } from './dto/my-company.dto';
+import { SwitchCompanyDto } from './dto/switch-company.dto';
+import { SwitchCompanyResponseDto } from './dto/switch-company-response.dto';
 import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
 import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
@@ -46,6 +51,48 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
     return this.service.validateLogin(loginDto);
+  }
+
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Post('workspace/login')
+  @ApiOkResponse({
+    type: LoginResponseDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  public workspaceLogin(
+    @Body() loginDto: AuthWorkspaceLoginDto,
+    @Ip() ip: string,
+  ): Promise<LoginResponseDto> {
+    return this.service.workspaceLogin(loginDto, ip);
+  }
+
+  @ApiBearerAuth()
+  @Get('companies')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({
+    type: [MyCompanyDto],
+  })
+  @HttpCode(HttpStatus.OK)
+  public companies(
+    @Request() request: RequestWithUser<JwtPayloadType>,
+  ): Promise<MyCompanyDto[]> {
+    return this.service.listCompanies(request.user);
+  }
+
+  @ApiBearerAuth()
+  @Post('switch-company')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({
+    type: SwitchCompanyResponseDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  public switchCompany(
+    @Request() request: RequestWithUser<JwtPayloadType>,
+    @Body() dto: SwitchCompanyDto,
+  ): Promise<SwitchCompanyResponseDto> {
+    return this.service.switchCompany(request.user, dto.companyId);
   }
 
   @Post('email/register')

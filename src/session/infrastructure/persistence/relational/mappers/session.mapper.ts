@@ -1,3 +1,5 @@
+import { CompanyEntity } from '../../../../../companies/infrastructure/persistence/relational/entities/company.entity';
+import { CompanyMapper } from '../../../../../companies/infrastructure/persistence/relational/mappers/company.mapper';
 import { UserEntity } from '../../../../../users/infrastructure/persistence/relational/entities/user.entity';
 import { UserMapper } from '../../../../../users/infrastructure/persistence/relational/mappers/user.mapper';
 import { Session } from '../../../../domain/session';
@@ -9,6 +11,9 @@ export class SessionMapper {
     domainEntity.id = raw.id;
     if (raw.user) {
       domainEntity.user = UserMapper.toDomain(raw.user);
+    }
+    if (raw.activeCompany) {
+      domainEntity.activeCompany = CompanyMapper.toDomain(raw.activeCompany);
     }
     domainEntity.hash = raw.hash;
     domainEntity.createdAt = raw.createdAt;
@@ -27,6 +32,13 @@ export class SessionMapper {
     }
     persistenceEntity.hash = domainEntity.hash;
     persistenceEntity.user = user;
+    if (domainEntity.activeCompany) {
+      const company = new CompanyEntity();
+      company.id = domainEntity.activeCompany.id;
+      persistenceEntity.activeCompany = company;
+    } else if (domainEntity.activeCompany === null) {
+      persistenceEntity.activeCompany = null;
+    }
     persistenceEntity.createdAt = domainEntity.createdAt;
     persistenceEntity.updatedAt = domainEntity.updatedAt;
     persistenceEntity.deletedAt = domainEntity.deletedAt;

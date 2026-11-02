@@ -7,6 +7,18 @@ import { ApiProperty } from '@nestjs/swagger';
 const idType = Number;
 
 export class User {
+  @Exclude({ toPlainOnly: true })
+  lastLoginAt?: Date | null;
+
+  @Exclude({ toPlainOnly: true })
+  phoneVerifiedAt?: Date | null;
+
+  @ApiProperty({
+    type: () => String,
+    nullable: true,
+  })
+  phone?: string | null;
+
   @ApiProperty({
     type: idType,
   })

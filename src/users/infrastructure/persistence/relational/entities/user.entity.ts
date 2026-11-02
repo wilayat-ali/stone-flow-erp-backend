@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToOne,
+  Check,
 } from 'typeorm';
 import { RoleEntity } from '../../../../../roles/infrastructure/persistence/relational/entities/role.entity';
 import { StatusEntity } from '../../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
@@ -17,10 +18,30 @@ import { FileEntity } from '../../../../../files/infrastructure/persistence/rela
 import { AuthProvidersEnum } from '../../../../../auth/auth-providers.enum';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 
+@Check(`"email" IS NOT NULL OR "phone" IS NOT NULL`)
 @Entity({
   name: 'user',
 })
 export class UserEntity extends EntityRelationalHelper {
+  @Column({
+    nullable: true,
+    type: Date,
+  })
+  lastLoginAt?: Date | null;
+
+  @Column({
+    nullable: true,
+    type: Date,
+  })
+  phoneVerifiedAt?: Date | null;
+
+  @Column({
+    nullable: true,
+    type: String,
+    unique: true,
+  })
+  phone?: string | null;
+
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -166,4 +166,56 @@ export class MailService {
       },
     });
   }
+
+  async companyInvitation(
+    mailData: MailData<{ url: string; companyName: string; roleName: string }>,
+  ): Promise<void> {
+    const title = `You are invited to ${mailData.data.companyName}`;
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: title,
+      text: `${title}: ${mailData.data.url}`,
+      templatePath: this.templatePath('company-invitation.hbs'),
+      context: {
+        title,
+        url: mailData.data.url,
+        actionTitle: 'Accept invitation',
+        app_name: this.configService.get('app.name', { infer: true }),
+        text1: `You have been invited to join ${mailData.data.companyName} as ${mailData.data.roleName}.`,
+        text2: 'This link works once and expires in 7 days.',
+      },
+    });
+  }
+
+  async passwordLink(
+    mailData: MailData<{ url: string; companyName: string }>,
+  ): Promise<void> {
+    const title = `Set your password for ${mailData.data.companyName}`;
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: title,
+      text: `${title}: ${mailData.data.url}`,
+      templatePath: this.templatePath('password-link.hbs'),
+      context: {
+        title,
+        url: mailData.data.url,
+        actionTitle: 'Set password',
+        app_name: this.configService.get('app.name', { infer: true }),
+        text1: `An administrator of ${mailData.data.companyName} sent you a link to set a new password.`,
+        text2: 'This link works once and expires in 48 hours.',
+      },
+    });
+  }
+
+  private templatePath(file: string): string {
+    return path.join(
+      this.configService.getOrThrow('app.workingDirectory', { infer: true }),
+      'src',
+      'mail',
+      'mail-templates',
+      file,
+    );
+  }
 }
