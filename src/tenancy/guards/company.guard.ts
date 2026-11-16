@@ -15,6 +15,11 @@ import {
   CompanyRoleKey,
   MEMBER_STATUS,
 } from '../tenancy.constants';
+import {
+  ALL_PERMISSIONS,
+  normalizePermissions,
+  OWNER_ROLE_KEY,
+} from '../permissions';
 import { RequestWithTenant } from '../tenant-context';
 
 // Runs after AuthGuard('jwt'). Loads the member on every request, so removing
@@ -62,6 +67,10 @@ export class CompanyGuard implements CanActivate {
       roleId: member.role.id,
       roleKey: member.role.key as CompanyRoleKey,
       roleName: member.role.name,
+      permissions:
+        member.role.key === OWNER_ROLE_KEY
+          ? ALL_PERMISSIONS
+          : normalizePermissions(member.role.permissions ?? []),
     };
 
     return true;

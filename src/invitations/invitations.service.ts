@@ -13,10 +13,7 @@ import { AuthService } from '../auth/auth.service';
 import { LoginResponseDto } from '../auth/dto/login-response.dto';
 import { SwitchCompanyResponseDto } from '../auth/dto/switch-company-response.dto';
 import type { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
-import {
-  assignableRoles,
-  canManageTarget,
-} from '../company-admin/member-policy';
+import { canAssign, canManageTarget } from '../company-admin/member-policy';
 import { AllConfigType } from '../config/config.type';
 import { CompanyInvitationEntity } from '../company-invitations/infrastructure/persistence/relational/entities/company-invitation.entity';
 import { CompanyMemberEntity } from '../company-members/infrastructure/persistence/relational/entities/company-member.entity';
@@ -37,8 +34,6 @@ import {
 } from '../tenancy/one-time-token';
 import { hashPassword } from '../tenancy/password.util';
 import {
-  COMPANY_ROLE_KEYS,
-  CompanyRoleKey,
   COMPANY_STATUS,
   INVITATION_STATUS,
   INVITATION_TYPE,
@@ -102,13 +97,6 @@ export class InvitationsService {
       throw unprocessable({ roleKey: 'cannotInviteAsOwner' });
     }
 
-    if (
-      !(COMPANY_ROLE_KEYS as readonly string[]).includes(dto.roleKey) ||
-      !assignableRoles(tenant.roleKey).includes(dto.roleKey as CompanyRoleKey)
-    ) {
-      throw new ForbiddenException();
-    }
-
     const phone = dto.phone ? normalizePhone(dto.phone) : null;
 
     if (dto.phone && !phone) {
@@ -127,6 +115,12 @@ export class InvitationsService {
 
     if (!role) {
       throw unprocessable({ roleKey: 'notExists' });
+    }
+
+    if (
+      !canAssign({ key: tenant.roleKey, permissions: tenant.permissions }, role)
+    ) {
+      throw new ForbiddenException();
     }
 
     const [byPhone, byEmail] = await Promise.all([
@@ -335,8 +329,11 @@ export class InvitationsService {
 
       if (
         !canManageTarget(
-          actor.tenant.roleKey,
-          member.role.key as CompanyRoleKey,
+          {
+            key: actor.tenant.roleKey,
+            permissions: actor.tenant.permissions,
+          },
+          member.role,
         )
       ) {
         throw new ForbiddenException(

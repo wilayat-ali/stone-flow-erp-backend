@@ -22,6 +22,18 @@ export class CompanyRole {
   name: string;
 
   @ApiProperty({
+    type: () => String,
+    nullable: false,
+  })
+  description: string;
+
+  @ApiProperty({
+    type: () => [String],
+    nullable: false,
+  })
+  permissions: string[];
+
+  @ApiProperty({
     type: () => Company,
     nullable: false,
   })

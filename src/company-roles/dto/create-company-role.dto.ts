@@ -12,6 +12,8 @@ import {
   IsNotEmptyObject,
   IsString,
   IsBoolean,
+  IsArray,
+  IsOptional,
 } from 'class-validator';
 
 import {
@@ -40,6 +42,23 @@ export class CreateCompanyRoleDto {
   })
   @IsString()
   name: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => String,
+  })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiProperty({
+    required: false,
+    type: () => [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  permissions?: string[];
 
   @ApiProperty({
     required: true,

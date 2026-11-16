@@ -7,6 +7,8 @@ import { CompanyEntity } from '../entities/company.entity';
 export class CompanyMapper {
   static toDomain(raw: CompanyEntity): Company {
     const domainEntity = new Company();
+    domainEntity.theme = raw.theme;
+
     domainEntity.currency = raw.currency;
 
     domainEntity.parchiLanguage = raw.parchiLanguage;
@@ -38,6 +40,8 @@ export class CompanyMapper {
 
   static toPersistence(domainEntity: Company): CompanyEntity {
     const persistenceEntity = new CompanyEntity();
+    persistenceEntity.theme = domainEntity.theme;
+
     persistenceEntity.currency = domainEntity.currency;
 
     persistenceEntity.parchiLanguage = domainEntity.parchiLanguage;

@@ -13,6 +13,10 @@ export class CompanyRoleMapper {
 
     domainEntity.name = raw.name;
 
+    domainEntity.description = raw.description;
+
+    domainEntity.permissions = raw.permissions;
+
     if (raw.company) {
       domainEntity.company = CompanyMapper.toDomain(raw.company);
     }
@@ -31,6 +35,10 @@ export class CompanyRoleMapper {
     persistenceEntity.key = domainEntity.key;
 
     persistenceEntity.name = domainEntity.name;
+
+    persistenceEntity.description = domainEntity.description;
+
+    persistenceEntity.permissions = domainEntity.permissions;
 
     if (domainEntity.company) {
       persistenceEntity.company = CompanyMapper.toPersistence(

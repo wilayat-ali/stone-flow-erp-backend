@@ -42,6 +42,8 @@ export class CompaniesService {
     return this.companyRepository.create({
       // Do not remove comment below.
       // <creating-property-payload />
+      theme: createCompanyDto.theme,
+
       currency: createCompanyDto.currency,
 
       parchiLanguage: createCompanyDto.parchiLanguage,
@@ -117,6 +119,8 @@ export class CompaniesService {
     return this.companyRepository.update(id, {
       // Do not remove comment below.
       // <updating-property-payload />
+      theme: updateCompanyDto.theme,
+
       currency: updateCompanyDto.currency,
 
       parchiLanguage: updateCompanyDto.parchiLanguage,

@@ -10,14 +10,21 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { InvitationsService } from '../invitations/invitations.service';
 import { CompanyAuth } from '../tenancy/decorators/company-auth.decorator';
-import { CompanyRoles } from '../tenancy/decorators/company-roles.decorator';
+import { Permissions } from '../tenancy/decorators/permissions.decorator';
 import { Tenant, TenantContext } from '../tenancy/tenant-context';
-import { ChangeMemberRoleDto, InviteMemberDto } from './dto/company-admin.dto';
+import {
+  ChangeBrandingDto,
+  ChangeSettingsDto,
+  ChangeMemberRoleDto,
+  InviteMemberDto,
+} from './dto/company-admin.dto';
+import { RoleInputDto, RoleViewDto } from './dto/role.dto';
 import { CompanyService } from './company.service';
 import { MembersService } from './members.service';
+import { RolesAdminService } from './roles-admin.service';
 
 const uuidPipe = new ParseUUIDPipe({
   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -36,6 +43,7 @@ export class CompanyAdminController {
     private readonly company: CompanyService,
     private readonly members: MembersService,
     private readonly invitations: InvitationsService,
+    private readonly roles: RolesAdminService,
   ) {}
 
   @Get('me')
@@ -43,15 +51,32 @@ export class CompanyAdminController {
     return this.company.me(tenant);
   }
 
+  @Get('settings')
+  settings(@Tenant() tenant: TenantContext) {
+    return this.company.settings(tenant);
+  }
+
+  @Patch('settings')
+  @Permissions('approvals.configure')
+  setSettings(@Tenant() tenant: TenantContext, @Body() dto: ChangeSettingsDto) {
+    return this.company.setApprovalRequired(tenant, dto.approvalRequired);
+  }
+
+  @Patch('branding')
+  @Permissions('branding.manage')
+  setBranding(@Tenant() tenant: TenantContext, @Body() dto: ChangeBrandingDto) {
+    return this.company.setTheme(tenant, dto.theme);
+  }
+
   @Get('members')
-  @CompanyRoles('owner', 'partner', 'manager')
+  @Permissions('users.view', 'users.manage', 'roles.view')
   listMembers(@Tenant() tenant: TenantContext) {
     return this.members.list(tenant.companyId);
   }
 
   @Post('members/:memberId/deactivate')
   @HttpCode(HttpStatus.OK)
-  @CompanyRoles('owner', 'partner')
+  @Permissions('users.manage')
   deactivate(
     @Tenant() tenant: TenantContext,
     @Param('memberId', uuidPipe) memberId: string,
@@ -61,7 +86,7 @@ export class CompanyAdminController {
 
   @Post('members/:memberId/activate')
   @HttpCode(HttpStatus.OK)
-  @CompanyRoles('owner', 'partner')
+  @Permissions('users.manage')
   activate(
     @Tenant() tenant: TenantContext,
     @Param('memberId', uuidPipe) memberId: string,
@@ -70,7 +95,7 @@ export class CompanyAdminController {
   }
 
   @Patch('members/:memberId/role')
-  @CompanyRoles('owner', 'partner')
+  @Permissions('users.manage')
   changeRole(
     @Tenant() tenant: TenantContext,
     @Param('memberId', uuidPipe) memberId: string,
@@ -84,7 +109,7 @@ export class CompanyAdminController {
   // work in another company.
   @Post('members/:memberId/reset-link')
   @HttpCode(HttpStatus.OK)
-  @CompanyRoles('owner', 'partner')
+  @Permissions('users.manage')
   resetLink(
     @Tenant() tenant: TenantContext,
     @Param('memberId', uuidPipe) memberId: string,
@@ -97,19 +122,54 @@ export class CompanyAdminController {
 
   @Post('invitations')
   @HttpCode(HttpStatus.CREATED)
-  @CompanyRoles('owner', 'partner')
+  @Permissions('users.manage')
   invite(@Tenant() tenant: TenantContext, @Body() dto: InviteMemberDto) {
     return this.invitations.createInvitation(tenant, dto);
   }
 
   @Get('invitations')
-  @CompanyRoles('owner', 'partner')
+  @Permissions('users.manage')
   listInvitations(@Tenant() tenant: TenantContext) {
     return this.invitations.listPending(tenant.companyId);
   }
 
+  // The company's roles with what each may do, and how many people have it.
+  // The invite sheet needs the list too, hence the wider read access.
+  @Get('roles')
+  @Permissions('roles.view', 'roles.manage', 'users.view', 'users.manage')
+  @ApiOkResponse({ type: [RoleViewDto] })
+  listRoles(@Tenant() tenant: TenantContext) {
+    return this.roles.list(tenant.companyId);
+  }
+
+  @Post('roles')
+  @HttpCode(HttpStatus.CREATED)
+  @Permissions('roles.manage')
+  @ApiOkResponse({ type: RoleViewDto })
+  createRole(@Tenant() tenant: TenantContext, @Body() dto: RoleInputDto) {
+    return this.roles.create(tenant, dto);
+  }
+
+  @Patch('roles/:key')
+  @Permissions('roles.manage')
+  @ApiOkResponse({ type: RoleViewDto })
+  updateRole(
+    @Tenant() tenant: TenantContext,
+    @Param('key') key: string,
+    @Body() dto: RoleInputDto,
+  ) {
+    return this.roles.update(tenant, key, dto);
+  }
+
+  @Delete('roles/:key')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Permissions('roles.manage')
+  deleteRole(@Tenant() tenant: TenantContext, @Param('key') key: string) {
+    return this.roles.remove(tenant, key);
+  }
+
   @Delete('invitations/:invitationId')
-  @CompanyRoles('owner', 'partner')
+  @Permissions('users.manage')
   revokeInvitation(
     @Tenant() tenant: TenantContext,
     @Param('invitationId', uuidPipe) invitationId: string,

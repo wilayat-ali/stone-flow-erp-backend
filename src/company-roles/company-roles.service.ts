@@ -47,6 +47,10 @@ export class CompanyRolesService {
 
       name: createCompanyRoleDto.name,
 
+      description: createCompanyRoleDto.description ?? '',
+
+      permissions: createCompanyRoleDto.permissions ?? [],
+
       company,
     });
   }
@@ -105,6 +109,10 @@ export class CompanyRolesService {
       key: updateCompanyRoleDto.key,
 
       name: updateCompanyRoleDto.name,
+
+      description: updateCompanyRoleDto.description,
+
+      permissions: updateCompanyRoleDto.permissions,
 
       company,
     });

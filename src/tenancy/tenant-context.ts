@@ -1,5 +1,6 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
+import type { Permission } from './permissions';
 import type { CompanyRoleKey } from './tenancy.constants';
 
 // Who is calling and for which company, as read from the database by
@@ -14,6 +15,9 @@ export type TenantContext = {
   roleId: string;
   roleKey: CompanyRoleKey;
   roleName: string;
+  // What the role may do, read from the database on every request. The
+  // Owner always has every permission.
+  permissions: Permission[];
 };
 
 export type RequestWithTenant = Request & { tenant?: TenantContext };

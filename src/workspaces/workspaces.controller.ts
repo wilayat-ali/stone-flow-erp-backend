@@ -10,6 +10,7 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { WorkspaceVerifyQueryDto } from './dto/workspace-verify-query.dto';
 import { WorkspaceVerifyResponseDto } from './dto/workspace-verify-response.dto';
 import { CompaniesService } from '../companies/companies.service';
+import { DEFAULT_THEME } from '../tenancy/tenancy.constants';
 
 @ApiTags('Workspaces')
 @Controller({
@@ -33,6 +34,10 @@ export class WorkspacesController {
       throw new NotFoundException();
     }
 
-    return { name: company.name, status: company.status };
+    return {
+      name: company.name,
+      status: company.status,
+      theme: company.theme ?? DEFAULT_THEME,
+    };
   }
 }

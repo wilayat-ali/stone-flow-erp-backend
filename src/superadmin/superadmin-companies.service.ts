@@ -29,6 +29,8 @@ import {
   PlatformKey,
   SYSTEM_ROLES,
 } from '../tenancy/tenancy.constants';
+import { DEFAULT_ROLE_PERMISSIONS } from '../tenancy/permissions';
+import { seedDefaultMasters } from '../settings/default-masters';
 import { UserEntity } from '../users/infrastructure/persistence/relational/entities/user.entity';
 import { normalizePhone } from '../utils/phone';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -148,10 +150,14 @@ export class SuperAdminCompaniesService {
               company,
               key: role.key,
               name: role.name,
+              description: '',
+              permissions: DEFAULT_ROLE_PERMISSIONS[role.key],
               isSystem: true,
             }),
           ),
         );
+
+        await seedDefaultMasters(em, company.id);
 
         await em.save(
           PLATFORM_KEYS.map((platformKey) =>

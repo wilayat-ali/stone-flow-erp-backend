@@ -245,6 +245,20 @@ describe('Multi-tenancy (e2e)', () => {
     );
     const userIds = users.map((u) => u.id);
 
+    for (const table of [
+      'supplier_cheque',
+      'supplier_payment',
+      'purchase',
+      'machine',
+      'factory',
+      'catalog_item',
+      'worker_rate',
+      'supplier',
+    ]) {
+      await db.query(`delete from "${table}" where "companyId" = any($1)`, [
+        companyIds,
+      ]);
+    }
     await db.query(`delete from audit_log where "companyId" = any($1)`, [
       companyIds,
     ]);

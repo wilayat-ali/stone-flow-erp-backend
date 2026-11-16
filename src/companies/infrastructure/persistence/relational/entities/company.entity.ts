@@ -16,6 +16,12 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
 })
 export class CompanyEntity extends EntityRelationalHelper {
   @Column({
+    nullable: true,
+    type: String,
+  })
+  theme?: string | null;
+
+  @Column({
     nullable: false,
     type: String,
     default: 'PKR',

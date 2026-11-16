@@ -10,14 +10,10 @@ import { DataSource, Repository } from 'typeorm';
 import { CompanyMemberEntity } from '../company-members/infrastructure/persistence/relational/entities/company-member.entity';
 import { CompanyRoleEntity } from '../company-roles/infrastructure/persistence/relational/entities/company-role.entity';
 import { AuditService } from '../tenancy/audit.service';
-import {
-  COMPANY_ROLE_KEYS,
-  CompanyRoleKey,
-  MEMBER_STATUS,
-} from '../tenancy/tenancy.constants';
+import { MEMBER_STATUS } from '../tenancy/tenancy.constants';
 import { inCompany } from '../tenancy/tenant-scope';
 import { TenantContext } from '../tenancy/tenant-context';
-import { assignableRoles, canManageTarget } from './member-policy';
+import { canAssign, canManageTarget } from './member-policy';
 
 export type MemberView = {
   memberId: string;
@@ -31,6 +27,11 @@ export type MemberView = {
   status: string;
   joinedAt: Date | null;
 };
+
+const actorRole = (tenant: TenantContext) => ({
+  key: tenant.roleKey,
+  permissions: tenant.permissions,
+});
 
 function unprocessable(errors: Record<string, unknown>) {
   return new UnprocessableEntityException({
@@ -110,19 +111,16 @@ export class MembersService {
       throw unprocessable({ roleKey: 'cannotAssignOwner' });
     }
 
-    if (
-      !(COMPANY_ROLE_KEYS as readonly string[]).includes(roleKey) ||
-      !assignableRoles(tenant.roleKey).includes(roleKey as CompanyRoleKey)
-    ) {
-      throw new ForbiddenException();
-    }
-
     const role = await this.roles.findOne({
       where: { ...inCompany(tenant.companyId), key: roleKey },
     });
 
     if (!role) {
       throw unprocessable({ roleKey: 'notExists' });
+    }
+
+    if (!canAssign(actorRole(tenant), role)) {
+      throw new ForbiddenException();
     }
 
     const previousRoleKey = target.role.key;
@@ -172,7 +170,7 @@ export class MembersService {
       throw unprocessable({ member: 'cannotChangeSelf' });
     }
 
-    if (!canManageTarget(tenant.roleKey, target.role.key as CompanyRoleKey)) {
+    if (!canManageTarget(actorRole(tenant), target.role)) {
       throw new ForbiddenException(
         target.role.key === 'owner' ? 'ownerProtected' : undefined,
       );

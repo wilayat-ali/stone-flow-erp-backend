@@ -21,6 +21,8 @@ import {
 } from 'class-transformer';
 
 export class CreateCompanyDto {
+  theme?: string | null;
+
   @ApiProperty({
     required: true,
     type: () => String,

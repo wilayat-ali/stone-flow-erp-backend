@@ -1,6 +1,21 @@
 export const PLATFORM_KEYS = ['factory', 'showroom', 'mine'] as const;
 export type PlatformKey = (typeof PLATFORM_KEYS)[number];
 
+// Colour themes a company can choose as its default look. The ids must match
+// the themes the frontend ships; the colours themselves live in the frontend.
+export const THEME_KEYS = [
+  'tangerine',
+  'twitter',
+  'amber-minimal',
+  'violet-bloom',
+  'northern-lights',
+  'darkmatter',
+  'candyland',
+  'vercel',
+] as const;
+export type ThemeKey = (typeof THEME_KEYS)[number];
+export const DEFAULT_THEME: ThemeKey = 'tangerine';
+
 export const COMPANY_ROLE_KEYS = [
   'owner',
   'partner',

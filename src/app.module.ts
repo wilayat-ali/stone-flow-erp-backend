@@ -46,8 +46,34 @@ import { SuperAdminsModule } from './super-admins/super-admins.module';
 
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 
+import { AccountsModule } from './accounts/accounts.module';
+
+import { LedgerEntriesModule } from './ledger-entries/ledger-entries.module';
+
+import { PartyLedgerEntriesModule } from './party-ledger-entries/party-ledger-entries.module';
+
+import { StockMovementsModule } from './stock-movements/stock-movements.module';
+
+import { ApprovalsModule } from './approvals/approvals.module';
+
+import { CashBankModule } from './cash-bank/cash-bank.module';
+import { SuppliersModule } from './suppliers/suppliers.module';
+import { SettingsModule } from './settings/settings.module';
+import { PurchasesModule } from './purchases/purchases.module';
+import { SupplierPaymentsModule } from './supplier-payments/supplier-payments.module';
+
 @Module({
   imports: [
+    CashBankModule,
+    SuppliersModule,
+    SettingsModule,
+    PurchasesModule,
+    SupplierPaymentsModule,
+    ApprovalsModule,
+    StockMovementsModule,
+    PartyLedgerEntriesModule,
+    LedgerEntriesModule,
+    AccountsModule,
     TenancyModule,
     NotificationsModule,
     InvitationsModule,

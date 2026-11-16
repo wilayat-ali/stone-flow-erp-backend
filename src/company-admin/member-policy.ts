@@ -1,23 +1,31 @@
-import { CompanyRoleKey } from '../tenancy/tenancy.constants';
+import { OWNER_ROLE_KEY } from '../tenancy/permissions';
 
 // Owner protection and who may manage whom.
 //  - Nobody is invited or promoted to Owner (ownership transfer comes later).
 //  - The Owner cannot be deactivated, demoted or reset by company members.
-//  - A Partner manages managers, munshis and viewers, never the Owner or
-//    another Partner.
+//  - Everyone else may only assign, or act on, a role that holds strictly
+//    fewer permissions than their own: nobody can hand out more power than
+//    they have, and a Partner cannot manage another Partner.
+// The route already requires `users.manage`; these rules decide the target.
 
-export function assignableRoles(actor: CompanyRoleKey): CompanyRoleKey[] {
-  if (actor === 'owner') return ['partner', 'manager', 'munshi', 'viewer'];
-  if (actor === 'partner') return ['manager', 'munshi', 'viewer'];
-  return [];
+export type RoleLike = { key: string; permissions: readonly string[] };
+
+function holdsLess(actor: RoleLike, target: RoleLike): boolean {
+  const mine = new Set(actor.permissions);
+  return (
+    target.permissions.length < mine.size &&
+    target.permissions.every((permission) => mine.has(permission))
+  );
 }
 
-export function canManageTarget(
-  actor: CompanyRoleKey,
-  target: CompanyRoleKey,
-): boolean {
-  if (target === 'owner') return false;
-  if (actor === 'owner') return true;
-  if (actor === 'partner') return target !== 'partner';
-  return false;
+// Whether `actor` may give `target` to someone (invite, change role).
+export function canAssign(actor: RoleLike, target: RoleLike): boolean {
+  if (target.key === OWNER_ROLE_KEY) return false;
+  if (actor.key === OWNER_ROLE_KEY) return true;
+  return holdsLess(actor, target);
+}
+
+// Whether `actor` may act on a member who currently has the `target` role.
+export function canManageTarget(actor: RoleLike, target: RoleLike): boolean {
+  return canAssign(actor, target);
 }

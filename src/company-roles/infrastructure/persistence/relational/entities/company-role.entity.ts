@@ -35,6 +35,20 @@ export class CompanyRoleEntity extends EntityRelationalHelper {
   })
   name: string;
 
+  @Column({
+    nullable: false,
+    type: String,
+    default: '',
+  })
+  description: string;
+
+  @Column({
+    nullable: false,
+    type: 'jsonb',
+    default: () => "'[]'",
+  })
+  permissions: string[];
+
   @ManyToOne(() => CompanyEntity, { eager: false, nullable: false })
   company: CompanyEntity;
 
