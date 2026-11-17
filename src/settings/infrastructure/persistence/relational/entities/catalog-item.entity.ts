@@ -13,12 +13,12 @@ import {
 } from 'typeorm';
 import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 
-// The plain name lists in Settings: soot sizes, counter widths and expense
-// categories. One table, told apart by `kind`; later modules point at a row by id.
+// The plain name lists in Settings: soot sizes, counter widths, expense
+// categories and materials. One table, told apart by `kind`; later modules point at a row by id.
 @Entity({ name: 'catalog_item' })
 @Check(
   'CHK_catalog_item_kind',
-  `"kind" IN ('soot_size', 'counter_width', 'expense_category')`,
+  `"kind" IN ('soot_size', 'counter_width', 'expense_category', 'material')`,
 )
 @Index('IDX_catalog_item_company_kind', ['company', 'kind'])
 export class CatalogItemEntity extends EntityRelationalHelper {

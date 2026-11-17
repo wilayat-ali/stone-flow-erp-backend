@@ -20,15 +20,18 @@ import {
   CreateCatalogItemDto,
   CreateFactoryDto,
   CreateMachineDto,
+  CreatePieceSizeDto,
   CreateWorkerRateDto,
   ListQueryDto,
   UpdateCatalogItemDto,
   UpdateFactoryDto,
   UpdateMachineDto,
+  UpdatePieceSizeDto,
   UpdateWorkerRateDto,
 } from './dto/settings.dto';
 import { FactoriesService } from './factories.service';
 import { MachinesService } from './machines.service';
+import { PieceSizesService } from './piece-sizes.service';
 import { CATALOG_PATHS, CatalogKind } from './settings.types';
 import { WorkerRatesService } from './worker-rates.service';
 
@@ -59,6 +62,7 @@ export class SettingsController {
     private readonly machines: MachinesService,
     private readonly catalog: CatalogService,
     private readonly rates: WorkerRatesService,
+    private readonly pieceSizes: PieceSizesService,
   ) {}
 
   // ----------------------------------------------------------- factories
@@ -140,6 +144,36 @@ export class SettingsController {
     @Body() dto: UpdateWorkerRateDto,
   ) {
     return this.rates.update(tenant, id, dto);
+  }
+
+  // ---------------------------------------------------------- piece sizes
+
+  @Get('piece-sizes')
+  listPieceSizes(
+    @Tenant() tenant: TenantContext,
+    @Query() query: ListQueryDto,
+  ) {
+    return this.pieceSizes.list(tenant, query.includeInactive);
+  }
+
+  @Post('piece-sizes')
+  @HttpCode(HttpStatus.CREATED)
+  @Permissions('settings.view')
+  createPieceSize(
+    @Tenant() tenant: TenantContext,
+    @Body() dto: CreatePieceSizeDto,
+  ) {
+    return this.pieceSizes.create(tenant, dto);
+  }
+
+  @Patch('piece-sizes/:id')
+  @Permissions('settings.view')
+  updatePieceSize(
+    @Tenant() tenant: TenantContext,
+    @Param('id', uuidPipe) id: string,
+    @Body() dto: UpdatePieceSizeDto,
+  ) {
+    return this.pieceSizes.update(tenant, id, dto);
   }
 
   // ------------------- soot-sizes, counter-widths and expense-categories

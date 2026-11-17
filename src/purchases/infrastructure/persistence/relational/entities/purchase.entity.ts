@@ -1,5 +1,7 @@
 import { CompanyMemberEntity } from '../../../../../company-members/infrastructure/persistence/relational/entities/company-member.entity';
 import { CompanyEntity } from '../../../../../companies/infrastructure/persistence/relational/entities/company.entity';
+import { MachineEntity } from '../../../../../settings/infrastructure/persistence/relational/entities/machine.entity';
+import { WorkerEntity } from '../../../../../workers/infrastructure/persistence/relational/entities/worker.entity';
 import { FactoryEntity } from '../../../../../settings/infrastructure/persistence/relational/entities/factory.entity';
 import { SupplierEntity } from '../../../../../suppliers/infrastructure/persistence/relational/entities/supplier.entity';
 
@@ -135,6 +137,30 @@ export class PurchaseEntity extends EntityRelationalHelper {
   @ManyToOne(() => CompanyMemberEntity, { eager: false, nullable: true })
   @JoinColumn({ foreignKeyConstraintName: 'FK_purchase_approved_by' })
   approvedBy?: CompanyMemberEntity | null;
+
+  // Set by Production when the truck is sent to cutting.
+  @ManyToOne(() => MachineEntity, { eager: false, nullable: true })
+  @JoinColumn({ foreignKeyConstraintName: 'FK_purchase_machine' })
+  machine?: MachineEntity | null;
+
+  @ManyToOne(() => WorkerEntity, { eager: false, nullable: true })
+  @JoinColumn({ foreignKeyConstraintName: 'FK_purchase_thekadar' })
+  thekadar?: WorkerEntity | null;
+
+  @Column({ nullable: true, type: 'date' })
+  cutStart?: string | null;
+
+  @Column({ nullable: true, type: 'date' })
+  cutEnd?: string | null;
+
+  @Column({
+    nullable: true,
+    type: 'numeric',
+    precision: 12,
+    scale: 2,
+    transformer: decimalTransformer,
+  })
+  cutRatePerTon?: number | null;
 
   // The approval this truck went through (engine record), to decide it later.
   @Column({ nullable: true, type: 'uuid' })

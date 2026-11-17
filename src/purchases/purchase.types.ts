@@ -45,6 +45,8 @@ export type PurchaseView = {
   machineName: string | null;
   thekadarId: string | null;
   thekadarName: string | null;
+  /** What the thekadar earns per ton, to suggest when the truck is finished. */
+  thekadarRate: number | null;
   cutStart: string | null;
   cutEnd: string | null;
   cutRatePerTon: number | null;

@@ -1,5 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { CatalogItemEntity } from './infrastructure/persistence/relational/entities/catalog-item.entity';
+import { PieceSizeEntity } from './infrastructure/persistence/relational/entities/piece-size.entity';
 import { WorkerRateEntity } from './infrastructure/persistence/relational/entities/worker-rate.entity';
 
 // The lists every new company starts with. They can be edited or hidden like
@@ -19,7 +20,46 @@ export const DEFAULT_CATALOG: Record<string, string[]> = {
     'Diesel & transport',
     'Other',
   ],
+  material: [
+    'Ziarat White (rough)',
+    'Sunny Grey (rough)',
+    'Jet Black (rough)',
+    'Black Galaxy (rough)',
+    'Carrara White (rough)',
+  ],
 };
+
+// The piece sizes (width x length in inches) each soot type is counted against.
+// Keyed by the number in the soot type's name ("14 soot" -> 14).
+export const DEFAULT_PIECE_SIZES: Record<string, string[]> = {
+  '14': [
+    '12x61',
+    '12x55',
+    '12x49',
+    '12x43',
+    '12x37',
+    '12x24',
+    '12x12',
+    '10x12',
+    '6x12',
+    '4x12',
+  ],
+  '6': ['24x24', '12x24', '12x12', '6x12'],
+  '4': ['12x24', '12x12', '10x12', '6x12', '6x24', '4x24'],
+};
+
+// "12x24" -> width 12, length 24 inches; null if it is not that shape.
+export function parsePieceSize(
+  label: string,
+): { widthInches: number; lengthInches: number } | null {
+  const match = /^(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)$/.exec(label);
+
+  if (!match || !(Number(match[1]) > 0) || !(Number(match[2]) > 0)) {
+    return null;
+  }
+
+  return { widthInches: Number(match[1]), lengthInches: Number(match[2]) };
+}
 
 export const DEFAULT_WORKER_RATES: {
   name: string;
@@ -45,7 +85,7 @@ export async function seedDefaultMasters(
   em: EntityManager,
   companyId: string,
 ): Promise<void> {
-  await em.save(
+  const catalog = await em.save(
     Object.entries(DEFAULT_CATALOG).flatMap(([kind, names]) =>
       names.map((name, index) =>
         em.create(CatalogItemEntity, {
@@ -58,6 +98,26 @@ export async function seedDefaultMasters(
       ),
     ),
   );
+
+  const sizes = catalog
+    .filter((item) => item.kind === 'soot_size')
+    .flatMap((soot) =>
+      (DEFAULT_PIECE_SIZES[String(parseFloat(soot.name))] ?? []).map(
+        (label, index) => {
+          const size = parsePieceSize(label)!;
+
+          return em.create(PieceSizeEntity, {
+            company: { id: companyId },
+            sootType: { id: soot.id },
+            label,
+            ...size,
+            isActive: true,
+            createdAt: staggered(index),
+          });
+        },
+      ),
+    );
+  await em.save(sizes);
   await em.save(
     DEFAULT_WORKER_RATES.map((rate, index) =>
       em.create(WorkerRateEntity, {

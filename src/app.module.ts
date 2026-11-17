@@ -61,6 +61,15 @@ import { SuppliersModule } from './suppliers/suppliers.module';
 import { SettingsModule } from './settings/settings.module';
 import { PurchasesModule } from './purchases/purchases.module';
 import { SupplierPaymentsModule } from './supplier-payments/supplier-payments.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { WorkersModule } from './workers/workers.module';
+import { ProductionModule } from './production/production.module';
+import { CustomersModule } from './customers/customers.module';
+import { SalesModule } from './sales/sales.module';
+import { ExpensesModule } from './expenses/expenses.module';
+import { LoansModule } from './loans/loans.module';
+import { MonthEndModule } from './month-close/month-end.module';
+import { ApprovalInboxModule } from './approval-inbox/approval-inbox.module';
 
 @Module({
   imports: [
@@ -69,6 +78,15 @@ import { SupplierPaymentsModule } from './supplier-payments/supplier-payments.mo
     SettingsModule,
     PurchasesModule,
     SupplierPaymentsModule,
+    InventoryModule,
+    WorkersModule,
+    ProductionModule,
+    CustomersModule,
+    SalesModule,
+    ExpensesModule,
+    LoansModule,
+    MonthEndModule,
+    ApprovalInboxModule,
     ApprovalsModule,
     StockMovementsModule,
     PartyLedgerEntriesModule,

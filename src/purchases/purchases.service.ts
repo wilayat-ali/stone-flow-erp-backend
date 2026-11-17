@@ -48,6 +48,8 @@ const markOf = (row: { markSeq?: number | null; stones: number }) =>
 const RELATIONS = {
   supplier: true,
   factory: true,
+  machine: true,
+  thekadar: true,
   createdBy: { user: true },
   approvedBy: { user: true },
 } as const;
@@ -575,13 +577,14 @@ export class PurchasesService {
       createdBy: personName(row.createdBy) ?? '',
       approvedBy: personName(row.approvedBy ?? undefined),
       createdAt: row.createdAt.toISOString(),
-      machineId: null,
-      machineName: null,
-      thekadarId: null,
-      thekadarName: null,
-      cutStart: null,
-      cutEnd: null,
-      cutRatePerTon: null,
+      machineId: row.machine?.id ?? null,
+      machineName: row.machine?.name ?? null,
+      thekadarId: row.thekadar?.id ?? null,
+      thekadarName: row.thekadar?.name ?? null,
+      thekadarRate: row.thekadar?.rate ?? null,
+      cutStart: row.cutStart ?? null,
+      cutEnd: row.cutEnd ?? null,
+      cutRatePerTon: row.cutRatePerTon ?? null,
     };
   }
 

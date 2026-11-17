@@ -11,6 +11,6 @@ import { CashBankController } from './cash-bank.controller';
   imports: [LedgerEntriesModule, ApprovalsModule],
   controllers: [CashBankController],
   providers: [CashBankAccountsService, CashBankEntriesService],
-  exports: [CashBankAccountsService],
+  exports: [CashBankAccountsService, CashBankEntriesService],
 })
 export class CashBankModule {}

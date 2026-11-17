@@ -7,6 +7,8 @@ import { FactoryEntity } from './infrastructure/persistence/relational/entities/
 import { MachineEntity } from './infrastructure/persistence/relational/entities/machine.entity';
 import { WorkerRateEntity } from './infrastructure/persistence/relational/entities/worker-rate.entity';
 import { MachinesService } from './machines.service';
+import { PieceSizesService } from './piece-sizes.service';
+import { PieceSizeEntity } from './infrastructure/persistence/relational/entities/piece-size.entity';
 import { SettingsController } from './settings.controller';
 import { WorkerRatesService } from './worker-rates.service';
 
@@ -20,6 +22,7 @@ import { WorkerRatesService } from './worker-rates.service';
       MachineEntity,
       CatalogItemEntity,
       WorkerRateEntity,
+      PieceSizeEntity,
     ]),
   ],
   controllers: [SettingsController],
@@ -28,12 +31,14 @@ import { WorkerRatesService } from './worker-rates.service';
     MachinesService,
     CatalogService,
     WorkerRatesService,
+    PieceSizesService,
   ],
   exports: [
     FactoriesService,
     MachinesService,
     CatalogService,
     WorkerRatesService,
+    PieceSizesService,
     TypeOrmModule,
   ],
 })

@@ -18,6 +18,7 @@ export const CATALOG_PATHS = {
   'soot-sizes': 'soot_size',
   'counter-widths': 'counter_width',
   'expense-categories': 'expense_category',
+  materials: 'material',
 } as const;
 export type CatalogPath = keyof typeof CATALOG_PATHS;
 export type CatalogKind = (typeof CATALOG_PATHS)[CatalogPath];

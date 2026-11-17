@@ -160,3 +160,24 @@ export class UpdateWorkerRateDto extends PartialType(CreateWorkerRateDto) {
   @IsBoolean()
   isActive?: boolean;
 }
+
+// -------------------------------------------------------------- piece size
+
+export class CreatePieceSizeDto {
+  @ApiProperty({ description: 'One of the soot sizes (14 soot, 6 soot, ...)' })
+  @IsUUID()
+  sootTypeId: string;
+
+  @ApiProperty({ example: '12x24', description: 'Width x length in inches' })
+  @Transform(trim)
+  @IsString()
+  @MaxLength(20)
+  label: string;
+}
+
+export class UpdatePieceSizeDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
